@@ -82,6 +82,12 @@ public final class RunnerBar: Composable {
                             self?.update(runnerSpeed: value)
                         }
                     }
+                    group.addImmediateTask {
+                        let stream = appStateClient.withLock(\.runnerRamFillStates.stream)
+                        for await value in stream {
+                            self?.update(ramFillState: value)
+                        }
+                    }
                 }
             }
 
@@ -133,6 +139,21 @@ public final class RunnerBar: Composable {
         eventBridge?.setSpeed(runnerSpeed)
     }
 
+    private func update(ramFillState: RamFillState) {
+        let configuration = userDefaultsRepository.ramFillConfiguration
+        let hex = switch ramFillState.zone {
+        case .low: configuration.lowColorHex
+        case .normal: configuration.normalColorHex
+        case .high: configuration.highColorHex
+        }
+        guard configuration.isVisible else {
+            eventBridge?.setRamFillState(ramFillState.level, nil)
+            return
+        }
+        let color = hex.flatMap(CGColor.from(hex:)) ?? NSColor.controlAccentColor.cgColor
+        eventBridge?.setRamFillState(ramFillState.level, color)
+    }
+
     public enum Action: Sendable {
         case viewAppeared(String, EventBridge)
         case viewDisappeared
@@ -143,19 +164,22 @@ public final class RunnerBar: Composable {
             public var setFrames: @MainActor @Sendable ([NSImage], Bool) -> Void
             public var setColor: @MainActor @Sendable (CGColor, Bool) -> Void
             public var setSpeed: @MainActor @Sendable (Float) -> Void
+            public var setRamFillState: @MainActor @Sendable (Int, CGColor?) -> Void
 
             public init(
                 getBundleImage: @escaping @MainActor @Sendable (String) -> NSImage,
                 setSize: @escaping @MainActor @Sendable (CGSize) -> Void,
                 setFrames: @escaping @MainActor @Sendable ([NSImage], Bool) -> Void,
                 setColor: @escaping @MainActor @Sendable (CGColor, Bool) -> Void,
-                setSpeed: @escaping @MainActor @Sendable (Float) -> Void
+                setSpeed: @escaping @MainActor @Sendable (Float) -> Void,
+                setRamFillState: @escaping @MainActor @Sendable (Int, CGColor?) -> Void
             ) {
                 self.getBundleImage = getBundleImage
                 self.setSize = setSize
                 self.setFrames = setFrames
                 self.setColor = setColor
                 self.setSpeed = setSpeed
+                self.setRamFillState = setRamFillState
             }
         }
     }

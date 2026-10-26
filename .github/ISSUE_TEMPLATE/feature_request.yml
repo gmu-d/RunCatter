@@ -8,7 +8,7 @@ body:
       value: |
         English only. Runner requests → [Runner Gallery](https://runcat-dev.github.io/RunnerGallery/) (not here). New UI languages ARE welcome here.
 
-        Skim [CONTRIBUTING.md](https://github.com/runcat-dev/RunCatNeo/blob/main/CONTRIBUTING.md) first — it defines the acceptance bar (benefit must outweigh maintenance cost) and the one-issue-per-topic rule.
+        Skim [CONTRIBUTING.md](https://github.com/gmu-d/RunCatter/blob/main/CONTRIBUTING.md) first — it defines the acceptance bar (benefit must outweigh maintenance cost) and the one-issue-per-topic rule.
 
   - type: textarea
     id: overview
@@ -37,7 +37,7 @@ body:
     attributes:
       label: "Check List"
       options:
-        - label: "I have read [CONTRIBUTING.md](https://github.com/runcat-dev/RunCatNeo/blob/main/CONTRIBUTING.md)."
+        - label: "I have read [CONTRIBUTING.md](https://github.com/gmu-d/RunCatter/blob/main/CONTRIBUTING.md)."
           required: true
         - label: "This benefits a wide range of users, and its benefit clearly outweighs the ongoing maintenance cost."
           required: true

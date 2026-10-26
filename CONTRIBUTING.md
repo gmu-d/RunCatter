@@ -1,7 +1,7 @@
-# Contributing to RunCat Neo
+# Contributing to RunCatter
 
-Thank you for your interest in contributing to **RunCat Neo** 🐈  
-RunCat Neo is a macOS system monitoring application represented as a running cat animation.
+Thank you for your interest in contributing to **RunCatter** 🐈  
+RunCatter is a macOS system monitoring application represented as a running cat animation.
 
 All kinds of contributions are welcome: bug reports, feature requests, and code contributions.
 
@@ -99,11 +99,11 @@ To suggest a new feature:
 
 ## Localization
 
-RunCat Neo ships translations that real users read every day, so localization is treated as its own contribution track with rules that differ from ordinary code contributions.
+RunCatter ships translations that real users read every day, so localization is treated as its own contribution track with rules that differ from ordinary code contributions.
 
 ### Requesting a New Language
 
-If you want RunCat Neo to support a language it does not yet ship with, **open an issue** using the `Feature Request` template and state:
+If you want RunCatter to support a language it does not yet ship with, **open an issue** using the `Feature Request` template and state:
 
 - the target language, and
 - your reason for the request (e.g. size of the audience, personal need).
@@ -144,8 +144,8 @@ Translation pull requests are held to a strict standard because the strings ship
 3. Clone your fork locally:
 
    ```bash
-   git clone https://github.com/your-username/RunCatNeo.git
-   cd RunCatNeo
+   git clone https://github.com/your-username/RunCatter.git
+   cd RunCatter
    ```
 
 4. Create a new branch:
@@ -235,5 +235,5 @@ Pull requests that violate these boundaries will need to be restructured before 
 
 ## Thank You
 
-Thank you again for contributing to **RunCat Neo**.
+Thank you again for contributing to **RunCatter**.
 Your time and effort help make this project better for everyone 😸

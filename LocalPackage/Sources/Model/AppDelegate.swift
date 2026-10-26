@@ -29,7 +29,6 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         appStateClient.withLock {
             $0.name = Bundle.main.bundleDisplayName
             $0.version = Bundle.main.bundleVersion
-            $0.subscriptionGroupID = Bundle.main.subscriptionGroupID
         }
         let logService = LogService(appDependencies)
         logService.bootstrap()
@@ -59,6 +58,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
                     for await value in stream {
                         systemMetricsService.updateMetrics(from: value)
                         runnerService.updateRunnerSpeed(from: value.cpuInfo)
+                        runnerService.updateRamFillState(from: value.memoryInfo)
                     }
                 }
             }

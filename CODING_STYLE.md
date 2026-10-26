@@ -73,7 +73,7 @@ These are the authoritative line-level style rules for all Swift code in this re
 
   ```swift
   let removedContainerURL = try #require(removedURL.withLock { $0 })
-  #expect(removedContainerURL.hasPathSuffix("RunCatNeo/alpha"))
+  #expect(removedContainerURL.hasPathSuffix("RunCatter/alpha"))
   ```
 
 - Read an `AllocatedUnfairLock` inside `#require` with the closure form (`withLock { $0 }`), not the key-path form (`withLock(\.self)`), because the macro expansion loses the key path's root type and fails to compile.

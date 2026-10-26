@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        English only. One issue per bug — file related-but-distinct bugs separately. See [CONTRIBUTING.md](https://github.com/runcat-dev/RunCatNeo/blob/main/CONTRIBUTING.md).
+        English only. One issue per bug — file related-but-distinct bugs separately. See [CONTRIBUTING.md](https://github.com/gmu-d/RunCatter/blob/main/CONTRIBUTING.md).
 
   - type: input
     id: app-version
@@ -67,7 +67,7 @@ body:
     attributes:
       label: "Check List"
       options:
-        - label: "I have read [CONTRIBUTING.md](https://github.com/runcat-dev/RunCatNeo/blob/main/CONTRIBUTING.md)."
+        - label: "I have read [CONTRIBUTING.md](https://github.com/gmu-d/RunCatter/blob/main/CONTRIBUTING.md)."
           required: true
         - label: "I reinstalled the app, rebooted my Mac, and the bug still reproduces."
           required: true

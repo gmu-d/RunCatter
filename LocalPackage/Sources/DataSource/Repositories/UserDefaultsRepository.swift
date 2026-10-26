@@ -99,6 +99,23 @@ public struct UserDefaultsRepository: Sendable {
         }
     }
 
+    public var ramFillConfiguration: RamFillConfiguration {
+        get {
+            guard let data = userDefaultsClient.data(.ramFillConfiguration),
+                  let value = try? JSONDecoder().decode(RamFillConfiguration.self, from: data) else {
+                return .default
+            }
+            return value
+        }
+        nonmutating set {
+            if let data = try? JSONEncoder().encode(newValue) {
+                userDefaultsClient.set(data, .ramFillConfiguration)
+            } else {
+                userDefaultsClient.removeObject(.ramFillConfiguration)
+            }
+        }
+    }
+
     public init(_ userDefaultsClient: UserDefaultsClient) {
         self.userDefaultsClient = userDefaultsClient
         if ProcessInfo.needsResetUserDefaults {

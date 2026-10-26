@@ -1,12 +1,12 @@
 # Custom Metrics JSON Schema
 
-RunCat Neo can watch any local JSON file you point it at and render it as a card on the dashboard. This document describes the file format the JSON must follow and how each field is displayed.
+RunCatterter can watch any local JSON file you point it at and render it as a card on the dashboard. This document describes the file format the JSON must follow and how each field is displayed.
 
 ## Overview
 
-You decide what to track (Claude Code usage, GPU temperature, GitHub contributions, remaining reminders, anything else). You write a small script or program that keeps a JSON file on disk up to date. RunCat watches the file with a `DispatchSource` file-system event source and updates the card the moment the file changes. RunCat itself never polls the file and never makes network calls — whether your data comes from the network is entirely up to your script.
+You decide what to track (Claude Code usage, GPU temperature, GitHub contributions, remaining reminders, anything else). You write a small script or program that keeps a JSON file on disk up to date. RunCatter watches the file with a `DispatchSource` file-system event source and updates the card the moment the file changes. RunCatter itself never polls the file and never makes network calls — whether your data comes from the network is entirely up to your script.
 
-To add a source: open RunCat's settings, go to **Metrics** → **Custom Metrics**, and click **Add Custom Metrics Source**, then pick the JSON file. The file is bookmarked with a security-scoped bookmark so the access survives sandbox restarts.
+To add a source: open RunCatter's settings, go to **Metrics** → **Custom Metrics**, and click **Add Custom Metrics Source**, then pick the JSON file. The file is bookmarked with a security-scoped bookmark so the access survives sandbox restarts.
 
 ## Schema
 
@@ -29,7 +29,7 @@ A valid file might look like this:
 }
 ```
 
-The values above are illustrative — `title`, `symbol`, and the metric labels are all your choice; pick whatever makes sense for what you're tracking. The `Model` row omits `normalizedValue`, so RunCat renders just the text with no bar; the other three rows include it, so a bar is drawn under the text.
+The values above are illustrative — `title`, `symbol`, and the metric labels are all your choice; pick whatever makes sense for what you're tracking. The `Model` row omits `normalizedValue`, so RunCatter renders just the text with no bar; the other three rows include it, so a bar is drawn under the text.
 
 ### Top level
 
@@ -51,7 +51,7 @@ The values above are illustrative — `title`, `symbol`, and the metric labels a
 
 ## Display rules
 
-- Producer-side formatting is intentional. RunCat does **not** apply units, percent signs, or rounding — whatever you put in `formattedValue` is shown verbatim.
+- Producer-side formatting is intentional. RunCatter does **not** apply units, percent signs, or rounding — whatever you put in `formattedValue` is shown verbatim.
 - `normalizedValue` is clamped to `[0, 1]` before the bar is drawn.
 - The bar is drawn in the accent color regardless of the value — it does not change color as the value grows. Encode any severity you want to convey in `formattedValue` itself.
 - If `metrics` is empty, the card shows only its title and the last-updated line.
@@ -67,18 +67,18 @@ If the file becomes unreadable (deleted, moved, permission revoked) or contains 
 
 Recovery is automatic — there is nothing to "reset", and fixing the producer is enough:
 
-- If the file was deleted or renamed, RunCat re-opens it, retrying every 5 seconds while it stays unreachable. This is also what makes the atomic `mv` pattern below work.
+- If the file was deleted or renamed, RunCatter re-opens it, retrying every 5 seconds while it stays unreachable. This is also what makes the atomic `mv` pattern below work.
 - If the file is still there but held invalid JSON, the watch stays alive and the card recovers on your next write.
 
 ## Constraints
 
 - Use strict JSON. Comments (`//`, `/* */`) and trailing commas are **not** supported.
-- Write atomically: write to a temporary file in the same directory and `mv` it into place. This avoids RunCat reading half-written content. The bundled samples do this.
-- Keep file size modest (well under a megabyte). RunCat re-decodes the file on every change.
+- Write atomically: write to a temporary file in the same directory and `mv` it into place. This avoids RunCatter reading half-written content. The bundled samples do this.
+- Keep file size modest (well under a megabyte). RunCatter re-decodes the file on every change.
 
 ## Update frequency
 
-There is no minimum cadence. Update the file every second, or only when something interesting changes — RunCat reacts to filesystem events. The watch stream keeps only the newest pending event, so a burst of writes collapses into a single re-read instead of queueing up.
+There is no minimum cadence. Update the file every second, or only when something interesting changes — RunCatter reacts to filesystem events. The watch stream keeps only the newest pending event, so a burst of writes collapses into a single re-read instead of queueing up.
 
 ## Examples
 

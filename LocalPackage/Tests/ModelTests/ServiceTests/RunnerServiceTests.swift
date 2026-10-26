@@ -57,7 +57,7 @@ struct RunnerServiceTests {
         let runner = Runner(id: "custom-runner", name: "Custom Runner", isTemplate: false, frameOrder: .custom([0]))
         let sut = RunnerService(.testDependencies(
             fileManagerClient: testDependency(of: FileManagerClient.self) {
-                $0.fileExists = { $0.hasSuffix("RunCatNeo/") }
+                $0.fileExists = { $0.hasSuffix("RunCatter/") }
             }
         ))
         #expect(throws: RCNError.customRunner(.loadingFailed)) {
@@ -127,7 +127,7 @@ struct RunnerServiceTests {
                 $0.read = { _ in Data(json.utf8) }
             },
             fileManagerClient: testDependency(of: FileManagerClient.self) {
-                $0.fileExists = { $0.hasSuffix("RunCatNeo/") || $0.hasSuffix("CUSTOM_RUNNERS.json") }
+                $0.fileExists = { $0.hasSuffix("RunCatter/") || $0.hasSuffix("CUSTOM_RUNNERS.json") }
             }
         ))
         sut.loadRunnerBundleList()
@@ -204,7 +204,7 @@ struct RunnerServiceTests {
                 $0.read = { _ in Data(json.utf8) }
             },
             fileManagerClient: testDependency(of: FileManagerClient.self) {
-                $0.fileExists = { $0.hasSuffix("RunCatNeo/") || $0.hasSuffix("CUSTOM_RUNNERS.json") }
+                $0.fileExists = { $0.hasSuffix("RunCatter/") || $0.hasSuffix("CUSTOM_RUNNERS.json") }
             },
             userDefaultsClient: testDependency(of: UserDefaultsClient.self) {
                 $0.string = { _ in "custom-runner" }
@@ -262,6 +262,73 @@ struct RunnerServiceTests {
         ))
         sut.updateRunnerSpeed(from: CPUInfo(percentage: Percentage(rawValue: 0.5), system: .zero, user: .zero, idle: .zero))
         #expect(appState.withLock(\.runnerSpeeds.latestValue) == 5.5)
+    }
+
+    @Test
+    func updateRamFillState_sends_low_zone_at_or_below_low_threshold() {
+        let appState = AllocatedUnfairLock<AppState>(initialState: .init())
+        let sut = RunnerService(.testDependencies(appStateClient: .testDependency(appState)))
+        sut.updateRamFillState(from: MemoryInfo(percentage: Percentage(rawValue: 0.5), pressure: .zero, app: .zero, wired: .zero, compressed: .zero))
+        #expect(appState.withLock(\.runnerRamFillStates.latestValue) == RamFillState(level: 10, zone: .low))
+    }
+
+    @Test
+    func updateRamFillState_sends_normal_zone_between_thresholds() {
+        let appState = AllocatedUnfairLock<AppState>(initialState: .init())
+        let sut = RunnerService(.testDependencies(appStateClient: .testDependency(appState)))
+        sut.updateRamFillState(from: MemoryInfo(percentage: Percentage(rawValue: 0.65), pressure: .zero, app: .zero, wired: .zero, compressed: .zero))
+        #expect(appState.withLock(\.runnerRamFillStates.latestValue) == RamFillState(level: 13, zone: .normal))
+    }
+
+    @Test
+    func updateRamFillState_sends_high_zone_at_high_threshold() {
+        let appState = AllocatedUnfairLock<AppState>(initialState: .init())
+        let sut = RunnerService(.testDependencies(appStateClient: .testDependency(appState)))
+        sut.updateRamFillState(from: MemoryInfo(percentage: Percentage(rawValue: 0.8), pressure: .zero, app: .zero, wired: .zero, compressed: .zero))
+        #expect(appState.withLock(\.runnerRamFillStates.latestValue) == RamFillState(level: 16, zone: .high))
+    }
+
+    @Test
+    func updateRamFillState_sends_zero_level_when_memoryInfo_is_nil() {
+        let appState = AllocatedUnfairLock<AppState>(initialState: .init())
+        let sut = RunnerService(.testDependencies(appStateClient: .testDependency(appState)))
+        sut.updateRamFillState(from: nil)
+        #expect(appState.withLock(\.runnerRamFillStates.latestValue) == RamFillState(level: 0, zone: .normal))
+    }
+
+    @Test
+    func updateRamFillState_respects_custom_thresholds() {
+        let appState = AllocatedUnfairLock<AppState>(initialState: .init())
+        let configuration = RamFillConfiguration(
+            lowThreshold: 30,
+            highThreshold: 60,
+            lowColorHex: "#34C759",
+            normalColorHex: nil,
+            highColorHex: "#FF3B30"
+        )
+        let sut = RunnerService(.testDependencies(
+            appStateClient: .testDependency(appState),
+            userDefaultsClient: testDependency(of: UserDefaultsClient.self) {
+                $0.data = { key in
+                    key == .ramFillConfiguration ? try? JSONEncoder().encode(configuration) : nil
+                }
+            }
+        ))
+        sut.updateRamFillState(from: MemoryInfo(percentage: Percentage(rawValue: 0.45), pressure: .zero, app: .zero, wired: .zero, compressed: .zero))
+        #expect(appState.withLock(\.runnerRamFillStates.latestValue) == RamFillState(level: 9, zone: .normal))
+        sut.updateRamFillState(from: MemoryInfo(percentage: Percentage(rawValue: 0.6), pressure: .zero, app: .zero, wired: .zero, compressed: .zero))
+        #expect(appState.withLock(\.runnerRamFillStates.latestValue) == RamFillState(level: 12, zone: .high))
+    }
+
+    @Test
+    func ramFillLevel_quantizes_memory_usage_in_five_percent_steps() {
+        #expect(RunnerService.ramFillLevel(usagePercentage: nil) == 0)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 4.9) == 0)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 5.0) == 1)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 50.0) == 10)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 99.9) == 19)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 100.0) == 20)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 120.0) == 20)
     }
 
     @Test
@@ -406,7 +473,7 @@ struct RunnerServiceTests {
         let expectedJSON = #"[{"frameOrder":[0],"id":"other-runner","isTemplate":false,"name":"Other Runner"}]"#
         #expect(writtenJSON.withLock(\.self) == expectedJSON)
         let removedDirectoryURL = try #require(removedURL.withLock { $0 })
-        #expect(removedDirectoryURL.hasPathSuffix("RunCatNeo/custom-runner"))
+        #expect(removedDirectoryURL.hasPathSuffix("RunCatter/custom-runner"))
     }
 
     @Test

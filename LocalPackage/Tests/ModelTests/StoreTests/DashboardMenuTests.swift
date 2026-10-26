@@ -58,7 +58,7 @@ struct DashboardMenuTests {
             .testDependencies(
                 appStateClient: .testDependency(appState),
                 fileManagerClient: testDependency(of: FileManagerClient.self) {
-                    $0.fileExists = { $0.hasSuffix("RunCatNeo/") }
+                    $0.fileExists = { $0.hasSuffix("RunCatter/") }
                 }
             ),
             currentRunner: .default
@@ -154,7 +154,7 @@ struct DashboardMenuTests {
         ))
         await sut.send(.reportIssueButtonTapped)
         #expect(callStack.withLock(\.self) == [
-            "open: https://github.com/runcat-dev/RunCatNeo/issues",
+            "open: https://github.com/gmu-d/RunCatter/issues",
         ])
     }
 

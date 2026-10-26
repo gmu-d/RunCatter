@@ -4,15 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-RunCat Neo is a macOS menu-bar app that animates a running cat in the status bar to reflect system load. Target: macOS 26.3+, built with Xcode 26.2+, Swift 6.2 (with `ExistentialAny` upcoming feature enabled).
+RunCatter is a macOS menu-bar app that animates a running cat in the status bar to reflect system load. Target: macOS 26.3+, built with Xcode 26.2+, Swift 6.2 (with `ExistentialAny` upcoming feature enabled).
 
 ## Build & Test
 
-The app shell lives in `RunCatNeo.xcodeproj` and embeds the local Swift Package `LocalPackage/`, which contains essentially all source code. The `xcode` MCP tools (`mcp__xcode__BuildProject`, `mcp__xcode__RunAllTests`, etc.) are the preferred way to build and run tests — fall back to `xcodebuild` only when MCP is unavailable.
+The app shell lives in `RunCatter.xcodeproj` and embeds the local Swift Package `LocalPackage/`, which contains essentially all source code. The `xcode` MCP tools (`mcp__xcode__BuildProject`, `mcp__xcode__RunAllTests`, etc.) are the preferred way to build and run tests — fall back to `xcodebuild` only when MCP is unavailable.
 
 Tests live only in the SPM package (`DataSourceTests`, `ModelTests`) and use Swift Testing (`@Test`, `#expect`). There are no UI tests and no linter configured.
 
-On the `xcodebuild` fallback only: run it from `LocalPackage/` with the `LocalPackage-Package` scheme on `platform=macOS,arch=arm64`. SwiftPM generates that scheme for the package, so it is not listed at the repository root — from there the equivalent is the `RunCatNeo` scheme and its `UnitTest.xctestplan`, which cover the same two targets. CI takes the former path (`working-directory: LocalPackage`).
+On the `xcodebuild` fallback only: run it from `LocalPackage/` with the `LocalPackage-Package` scheme on `platform=macOS,arch=arm64`. SwiftPM generates that scheme for the package, so it is not listed at the repository root — from there the equivalent is the `RunCatter` scheme and its `UnitTest.xctestplan`, which cover the same two targets. CI takes the former path (`working-directory: LocalPackage`).
 
 CI (`.github/workflows/test.yml`) runs on tag pushes only — local test runs are the primary verification loop during development.
 

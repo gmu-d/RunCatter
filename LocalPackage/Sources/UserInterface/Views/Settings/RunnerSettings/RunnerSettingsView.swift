@@ -42,6 +42,124 @@ struct RunnerSettingsView: View {
             } header: {
                 Text("appearance", bundle: .module)
             }
+            Section {
+                Toggle(isOn: Binding<Bool>(
+                    get: { store.ramFillConfiguration.isVisible },
+                    asyncSet: { isVisible in
+                        var configuration = store.ramFillConfiguration
+                        configuration.isVisible = isVisible
+                        await store.send(.ramFillConfigurationChanged(configuration))
+                    }
+                )) {
+                    Text("showRamFill", bundle: .module)
+                }
+                LabeledContent {
+                    Slider(
+                        value: Binding<Double>(
+                            get: { Double(store.ramFillConfiguration.lowThreshold) },
+                            asyncSet: { value in
+                                var configuration = store.ramFillConfiguration
+                                configuration.lowThreshold = Int(value.rounded())
+                                await store.send(.ramFillConfigurationChanged(configuration))
+                            }
+                        ),
+                        in: 1...99,
+                        step: 1
+                    )
+                    Text(verbatim: "\(store.ramFillConfiguration.lowThreshold)%")
+                } label: {
+                    Text("lowLoadState", bundle: .module)
+                }
+                LabeledContent {
+                    Slider(
+                        value: Binding<Double>(
+                            get: { Double(store.ramFillConfiguration.highThreshold) },
+                            asyncSet: { value in
+                                var configuration = store.ramFillConfiguration
+                                configuration.highThreshold = Int(value.rounded())
+                                await store.send(.ramFillConfigurationChanged(configuration))
+                            }
+                        ),
+                        in: 1...99,
+                        step: 1
+                    )
+                    Text(verbatim: "\(store.ramFillConfiguration.highThreshold)%")
+                } label: {
+                    Text("highLoadState", bundle: .module)
+                }
+                LabeledContent {
+                    ColorPicker(
+                        selection: Binding<Color>(
+                            get: {
+                                Color(hex: store.ramFillConfiguration.lowColorHex)
+                                    ?? Color(nsColor: .controlAccentColor)
+                            },
+                            asyncSet: { color in
+                                var configuration = store.ramFillConfiguration
+                                configuration.lowColorHex = color.hex
+                                await store.send(.ramFillConfigurationChanged(configuration))
+                            }
+                        ),
+                        supportsOpacity: false
+                    ) {
+                        EmptyView()
+                    }
+                    .labelsHidden()
+                } label: {
+                    Text("lowLoadState", bundle: .module)
+                }
+                LabeledContent {
+                    ColorPicker(
+                        selection: Binding<Color>(
+                            get: {
+                                Color(hex: store.ramFillConfiguration.normalColorHex)
+                                    ?? Color(nsColor: .controlAccentColor)
+                            },
+                            asyncSet: { color in
+                                var configuration = store.ramFillConfiguration
+                                configuration.normalColorHex = color.hex
+                                await store.send(.ramFillConfigurationChanged(configuration))
+                            }
+                        ),
+                        supportsOpacity: false
+                    ) {
+                        EmptyView()
+                    }
+                    .labelsHidden()
+                } label: {
+                    Text("normalLoadState", bundle: .module)
+                }
+                LabeledContent {
+                    ColorPicker(
+                        selection: Binding<Color>(
+                            get: {
+                                Color(hex: store.ramFillConfiguration.highColorHex)
+                                    ?? Color(nsColor: .controlAccentColor)
+                            },
+                            asyncSet: { color in
+                                var configuration = store.ramFillConfiguration
+                                configuration.highColorHex = color.hex
+                                await store.send(.ramFillConfigurationChanged(configuration))
+                            }
+                        ),
+                        supportsOpacity: false
+                    ) {
+                        EmptyView()
+                    }
+                    .labelsHidden()
+                } label: {
+                    Text("highLoadState", bundle: .module)
+                }
+                Button {
+                    Task {
+                        await store.send(.ramFillColorsReset)
+                    }
+                } label: {
+                    Text("resetRamFillColors", bundle: .module)
+                }
+            } header: {
+                Text("ramFill", bundle: .module)
+            }
             CustomRunnerSettingsSectionView(store: store.customRunnerSettings)
         }
         .formStyle(.grouped)

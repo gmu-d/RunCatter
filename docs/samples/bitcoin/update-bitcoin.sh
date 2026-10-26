@@ -1,5 +1,5 @@
 #!/bin/sh
-# RunCat Neo — Bitcoin price sample.
+# RunCatter — Bitcoin price sample.
 #
 # Fetches the current Bitcoin price in USD from the CoinGecko public API
 # and writes a Custom Metrics JSON snapshot shaped like:
@@ -16,7 +16,7 @@
 
 set -eu
 
-outputFile="${RUNCAT_OUT_FILE:-$HOME/.runcat/bitcoin.json}"
+outputFile="${RUNCATTER_OUT_FILE:-$HOME/.runcatter/bitcoin.json}"
 apiURL="https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
 
 price=$(curl -fsS --max-time 15 "$apiURL" | sed -nE 's/.*"usd" *: *([0-9]+(\.[0-9]+)?).*/\1/p')

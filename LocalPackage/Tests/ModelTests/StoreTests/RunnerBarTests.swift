@@ -7,7 +7,10 @@ import Testing
 @testable import Model
 
 struct RunnerBarTests {
-    private func makeEventBridge(recording callStack: AllocatedUnfairLock<[String]>) -> RunnerBar.Action.EventBridge {
+    private func makeEventBridge(
+        recording callStack: AllocatedUnfairLock<[String]>,
+        capturing colors: AllocatedUnfairLock<[CGColor?]>? = nil
+    ) -> RunnerBar.Action.EventBridge {
         RunnerBar.Action.EventBridge(
             getBundleImage: { name in
                 callStack.withLock { $0.append("getBundleImage: \(name)") }
@@ -22,6 +25,10 @@ struct RunnerBarTests {
             setColor: { _, _ in },
             setSpeed: { speed in
                 callStack.withLock { $0.append("setSpeed: \(speed)") }
+            },
+            setRamFillState: { level, color in
+                callStack.withLock { $0.append("setRamFillState: \(level)") }
+                colors?.withLock { $0.append(color) }
             }
         )
     }
@@ -60,6 +67,48 @@ struct RunnerBarTests {
         await sut.send(.viewAppeared("RunnerBarTests", makeEventBridge(recording: callStack)))
         await waitUntil { !callStack.withLock(\.self).isEmpty }
         #expect(callStack.withLock(\.self) == ["setSpeed: 12.5"])
+        await sut.send(.viewDisappeared)
+    }
+
+    @MainActor @Test
+    func send_viewAppeared_applies_ram_fill_state_to_event_bridge() async {
+        let appState = AllocatedUnfairLock<AppState>(initialState: .init())
+        appState.withLock { $0.runnerRamFillStates.send(RamFillState(level: 13, zone: .high)) }
+        let callStack = AllocatedUnfairLock<[String]>(initialState: [])
+        let colors = AllocatedUnfairLock<[CGColor?]>(initialState: [])
+        let sut = RunnerBar(.testDependencies(appStateClient: .testDependency(appState)))
+        await sut.send(.viewAppeared("RunnerBarTests", makeEventBridge(recording: callStack, capturing: colors)))
+        await waitUntil { !callStack.withLock(\.self).isEmpty }
+        #expect(callStack.withLock(\.self) == ["setRamFillState: 13"])
+        #expect(colors.withLock(\.self) == [CGColor.from(hex: "#FF3B30")])
+        await sut.send(.viewDisappeared)
+    }
+
+    @MainActor @Test
+    func send_viewAppeared_sends_nil_color_when_ram_fill_is_hidden() async {
+        let hidden = RamFillConfiguration(
+            isVisible: false,
+            lowThreshold: 50,
+            highThreshold: 80,
+            lowColorHex: "#34C759",
+            normalColorHex: nil,
+            highColorHex: "#FF3B30"
+        )
+        let appState = AllocatedUnfairLock<AppState>(initialState: .init())
+        appState.withLock { $0.runnerRamFillStates.send(RamFillState(level: 13, zone: .high)) }
+        let callStack = AllocatedUnfairLock<[String]>(initialState: [])
+        let colors = AllocatedUnfairLock<[CGColor?]>(initialState: [])
+        let sut = RunnerBar(.testDependencies(
+            appStateClient: .testDependency(appState),
+            userDefaultsClient: testDependency(of: UserDefaultsClient.self) {
+                $0.data = { key in
+                    key == .ramFillConfiguration ? try? JSONEncoder().encode(hidden) : nil
+                }
+            }
+        ))
+        await sut.send(.viewAppeared("RunnerBarTests", makeEventBridge(recording: callStack, capturing: colors)))
+        await waitUntil { !callStack.withLock(\.self).isEmpty }
+        #expect(colors.withLock(\.self) == [nil])
         await sut.send(.viewDisappeared)
     }
 

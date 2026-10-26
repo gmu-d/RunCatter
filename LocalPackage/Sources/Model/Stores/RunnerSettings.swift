@@ -30,6 +30,7 @@ public final class RunnerSettings: Composable {
 
     public var speedDecreasesUnderLoad: Bool
     public var isFlippedHorizontally: Bool
+    public var ramFillConfiguration: RamFillConfiguration
     public let customRunnerSettings: CustomRunnerSettings
     public let action: (Action) async -> Void
 
@@ -37,6 +38,7 @@ public final class RunnerSettings: Composable {
         _ appDependencies: AppDependencies,
         speedDecreasesUnderLoad: Bool? = nil,
         isFlippedHorizontally: Bool? = nil,
+        ramFillConfiguration: RamFillConfiguration? = nil,
         customRunnerSettings: CustomRunnerSettings? = nil,
         action: @escaping (Action) async -> Void = { _ in }
     ) {
@@ -46,6 +48,7 @@ public final class RunnerSettings: Composable {
         self.systemMetricsService = .init(appDependencies)
         self.speedDecreasesUnderLoad = speedDecreasesUnderLoad ?? userDefaultsRepository.speedDecreasesUnderLoad
         self.isFlippedHorizontally = isFlippedHorizontally ?? userDefaultsRepository.isFlippedHorizontally
+        self.ramFillConfiguration = ramFillConfiguration ?? userDefaultsRepository.ramFillConfiguration
         weak var weakSelf: RunnerSettings? = nil
         self.customRunnerSettings = customRunnerSettings ??
             .init(appDependencies, action: { await weakSelf?.send(.customRunnerSettings($0)) })
@@ -69,6 +72,25 @@ public final class RunnerSettings: Composable {
             userDefaultsRepository.isFlippedHorizontally = isOn
             runnerService.resendCurrentRunnerBundle()
 
+        case let .ramFillConfigurationChanged(configuration):
+            var configuration = configuration
+            if configuration.lowThreshold >= configuration.highThreshold {
+                configuration.lowThreshold = configuration.highThreshold - 1
+            }
+            ramFillConfiguration = configuration
+            userDefaultsRepository.ramFillConfiguration = configuration
+            runnerService.updateRamFillState(from: systemMetricsService.currentSystemInfoBundle.memoryInfo)
+
+        case .ramFillColorsReset:
+            var configuration = ramFillConfiguration
+            configuration.isVisible = true
+            configuration.lowColorHex = RamFillConfiguration.default.lowColorHex
+            configuration.normalColorHex = RamFillConfiguration.default.normalColorHex
+            configuration.highColorHex = RamFillConfiguration.default.highColorHex
+            ramFillConfiguration = configuration
+            userDefaultsRepository.ramFillConfiguration = configuration
+            runnerService.updateRamFillState(from: systemMetricsService.currentSystemInfoBundle.memoryInfo)
+
         case .customRunnerSettings:
             return
         }
@@ -78,6 +100,8 @@ public final class RunnerSettings: Composable {
         case viewAppeared(String)
         case slowDownUnderLoadToggleSwitched(Bool)
         case flipHorizontallyToggleSwitched(Bool)
+        case ramFillConfigurationChanged(RamFillConfiguration)
+        case ramFillColorsReset
         case customRunnerSettings(CustomRunnerSettings.Action)
     }
 }

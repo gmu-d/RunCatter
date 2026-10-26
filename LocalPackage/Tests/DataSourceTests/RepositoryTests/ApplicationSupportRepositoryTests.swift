@@ -87,7 +87,7 @@ struct ApplicationSupportRepositoryTests {
         let sut = ApplicationSupportRepository(dataClient, fileManagerClient)
         #expect(sut.loadCustomRunners() == [Runner(id: "custom", name: "Custom", isTemplate: false, frameOrder: .custom([0, 1]))])
         let readCustomRunnersURL = try #require(readURL.withLock { $0 })
-        #expect(readCustomRunnersURL.hasPathSuffix("RunCatNeo/CUSTOM_RUNNERS.json"))
+        #expect(readCustomRunnersURL.hasPathSuffix("RunCatter/CUSTOM_RUNNERS.json"))
     }
 
     @Test
@@ -151,7 +151,7 @@ struct ApplicationSupportRepositoryTests {
         let sut = ApplicationSupportRepository(dataClient, .testValue)
         try sut.saveCustomRunners([Runner(id: "custom", name: "Custom", isTemplate: false, frameOrder: .custom([0, 1]))])
         let (data, url) = try #require(written.withLock { $0 })
-        #expect(url.hasPathSuffix("RunCatNeo/CUSTOM_RUNNERS.json"))
+        #expect(url.hasPathSuffix("RunCatter/CUSTOM_RUNNERS.json"))
         let expectedJSON = #"[{"frameOrder":[0,1],"id":"custom","isTemplate":false,"name":"Custom"}]"#
         #expect(String(decoding: data, as: UTF8.self) == expectedJSON)
     }
@@ -200,7 +200,7 @@ struct ApplicationSupportRepositoryTests {
         let sut = ApplicationSupportRepository(dataClient, fileManagerClient)
         #expect(sut.loadData(directory: "alpha", fileName: "frame-0", fileType: .png) == Data("image".utf8))
         let readFrameURL = try #require(readURL.withLock { $0 })
-        #expect(readFrameURL.hasPathSuffix("RunCatNeo/alpha/frame-0.png"))
+        #expect(readFrameURL.hasPathSuffix("RunCatter/alpha/frame-0.png"))
     }
 
     @Test
@@ -213,7 +213,7 @@ struct ApplicationSupportRepositoryTests {
             }
         }
         let fileManagerClient = testDependency(of: FileManagerClient.self) {
-            $0.fileExists = { $0.hasSuffix("RunCatNeo/") }
+            $0.fileExists = { $0.hasSuffix("RunCatter/") }
             $0.createDirectory = { url, _ in
                 createdDirectoryURL.withLock { $0 = url }
             }
@@ -221,9 +221,9 @@ struct ApplicationSupportRepositoryTests {
         let sut = ApplicationSupportRepository(dataClient, fileManagerClient)
         try sut.saveData(directory: "alpha", fileName: "frame-0", fileType: .png, data: Data())
         let createdContainerURL = try #require(createdDirectoryURL.withLock { $0 })
-        #expect(createdContainerURL.hasPathSuffix("RunCatNeo/alpha"))
+        #expect(createdContainerURL.hasPathSuffix("RunCatter/alpha"))
         let writtenFrameURL = try #require(writtenURL.withLock { $0 })
-        #expect(writtenFrameURL.hasPathSuffix("RunCatNeo/alpha/frame-0.png"))
+        #expect(writtenFrameURL.hasPathSuffix("RunCatter/alpha/frame-0.png"))
     }
 
     @Test
@@ -266,7 +266,7 @@ struct ApplicationSupportRepositoryTests {
         let sut = ApplicationSupportRepository(.testValue, fileManagerClient)
         sut.delete(directory: "alpha")
         let removedContainerURL = try #require(removedURL.withLock { $0 })
-        #expect(removedContainerURL.hasPathSuffix("RunCatNeo/alpha"))
+        #expect(removedContainerURL.hasPathSuffix("RunCatter/alpha"))
     }
 
     @Test

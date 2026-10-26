@@ -1,42 +1,34 @@
-# RunCat Neo
+# RunCatter
 
-**A cute running cat animation on your macOS menubar.**
+**A cute running cat animation on your macOS menubar — with a RAM fill gauge.**
 
-> [!CAUTION]
->
-> - This project is for macOS, so we do not accept inquiries about Windows version.
-> - We do not accept issues or pull requests in languages other than English.
-> - Issues that do not follow the Issue Template will be closed without question.
-> - Requests to add new runners are not accepted here. Please make them in the [Runner Gallery](https://runcat-dev.github.io/RunnerGallery/).
+[![Issues](https://img.shields.io/github/issues/gmu-d/RunCatter)](https://github.com/gmu-d/RunCatter/issues)
+[![Forks](https://img.shields.io/github/forks/gmu-d/RunCatter)](https://github.com/gmu-d/RunCatter/network/members)
+[![Stars](https://img.shields.io/github/stars/gmu-d/RunCatter)](https://github.com/gmu-d/RunCatter/stargazers)
+[![Top language](https://img.shields.io/github/languages/top/gmu-d/RunCatter)](https://github.com/gmu-d/RunCatter/)
+[![License](https://img.shields.io/github/license/gmu-d/RunCatter)](https://github.com/gmu-d/RunCatter/)
 
-[![Issues](https://img.shields.io/github/issues/runcat-dev/RunCatNeo)](https://github.com/runcat-dev/RunCatNeo/issues)
-[![Forks](https://img.shields.io/github/forks/runcat-dev/RunCatNeo)](https://github.com/runcat-dev/RunCatNeo/network/members)
-[![Stars](https://img.shields.io/github/stars/runcat-dev/RunCatNeo)](https://github.com/runcat-dev/RunCatNeo/stargazers)
-[![Top language](https://img.shields.io/github/languages/top/runcat-dev/RunCatNeo)](https://github.com/runcat-dev/RunCatNeo/)
-[![Releases](https://img.shields.io/github/v/release/runcat-dev/RunCatNeo)](https://github.com/runcat-dev/RunCatNeo/releases)
-[![License](https://img.shields.io/github/license/runcat-dev/RunCatNeo)](https://github.com/runcat-dev/RunCatNeo/)
+`Swift` `macOS` `Xcode`
 
-`Swift` `macOS` `Xcode` `RunCat`
+## About This Fork
 
-<img src="./docs/images/en/demo.gif" width="449" height="350" alt="demo" />
+RunCatter is a **fork of [RunCat Neo](https://github.com/runcat-dev/RunCatNeo)** by [Kyome22](https://github.com/Kyome22), a macOS menu-bar app that animates a running cat reflecting CPU load.
 
-## Installation
+**What this fork adds:**
 
-RunCat Neo is available for installation on the App Store.
+- **RAM usage visualization** — the menu-bar cat fills up from the bottom as RAM usage rises, colored by load zone.
+- Configurable load thresholds and per-zone colors, edited in Runner Settings.
+- Rebranded as a standalone project ("RunCatter") with its own bundle identity; removed the in-app donation/IAP flow.
 
-- Requirement: macOS 26 or higher
-- App Store: https://apps.apple.com/us/app/runcat-neo/id6757801838
-- Language:
-  - Chinese (simplified)
-  - Chinese (traditional)
-  - English (primary)
-  - French
-  - German
-  - Japanese
-  - Korean
-  - Russian
-  - Spanish
-  - Vietnamese
+Thanks to the original author and all RunCat Neo contributors — this project exists because of their excellent work.
+
+## Legal & Non-Commercial Notice
+
+- This project is licensed under the **Apache License 2.0** (see [LICENSE](LICENSE)). The original upstream copyright notice is retained as the license requires.
+- Modifications relative to upstream are listed above; this fork is a separate project and is **not affiliated with, endorsed by, or sponsored by the original developer**. "RunCat" and its logos/assets belong to their respective owners; visual assets retained under the terms of the license.
+- This is a **hobby project made for fun**. It has **no commercial purpose**, generates no revenue, and is not distributed on the App Store.
+- Developed largely with **AI assistance using [OpenCode](https://github.com/sst/opencode) and GLM** — every change was reviewed and tested by the maintainer.
+- The software is provided "as is", without warranty of any kind, as stated in the license.
 
 ## Requirements
 
@@ -46,14 +38,14 @@ RunCat Neo is available for installation on the App Store.
 
 ## Architecture
 
-This project is built using an architecture called [LUCA](https://github.com/Kyome22/LUCA).  
+This project is built using an architecture called [LUCA](https://github.com/Kyome22/LUCA).
 Please refer to the following article for more details.
 
 https://dev.to/kyome22/luca-a-modern-architecture-for-swiftui-development-3g2i
 
 ## Custom Metrics
 
-RunCat can watch any local JSON file in the documented format and render it as a card on the dashboard. Use it to display Claude Code usage, GPU temperature, GitHub contributions, remaining reminders, or anything else you can write to a file.
+RunCatter can watch any local JSON file in the documented format and render it as a card on the dashboard. Use it to display Claude Code usage, GPU temperature, GitHub contributions, remaining reminders, or anything else you can write to a file.
 
 - [JSON schema](docs/CustomMetricsSchema.md)
 - [Claude Code statusLine sample](docs/samples/claude-code/)
@@ -62,21 +54,6 @@ RunCat can watch any local JSON file in the documented format and render it as a
 
 ## Custom Runners
 
-By creating your own keyframe animations, you can have any runner you like dashing across your menu bar. You can also find resources for custom runners showcased and distributed in the [Runner Gallery](https://runcat-dev.github.io/RunnerGallery/).
+By creating your own keyframe animations, you can have any runner you like dashing across your menu bar.
 
-Runners are managed in the Runner Gallery, not in this repository. If you want a new runner added, or want to share one you made, please head to the [Runner Gallery](https://runcat-dev.github.io/RunnerGallery/) instead of opening an Issue here.
-
-## RunCat Developers' Community
-
-This is a space for RunCat contributors to communicate closely regarding development and operations.
-We welcome anyone interested in contributing to RunCat.
-However, please note that this is a place for discussing features, not for submitting requests.
-For requests, please create an Issue according to the template.
-
-Portal: https://runcat-dev.github.io
-
-## Contributors
-
-<a href="https://github.com/runcat-dev/RunCatNeo/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=runcat-dev/RunCatNeo" />
-</a>
+Runners are managed outside of this repository. If you want to share one you made, please fork this repository or manage it locally from Runner Settings.

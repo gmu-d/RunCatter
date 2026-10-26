@@ -22,9 +22,11 @@ import AppKit
 
 final class RunnerLayer: CALayer {
     private var gap: CGFloat
-    private var width = CGFloat.zero
     private let maskLayer = CALayer()
+    private let fillLayer = CALayer()
     private var keyFrameAnimation = CAKeyframeAnimation(keyPath: "contents")
+    private var fillColor: CGColor?
+    private var ramFillLevel = Int.zero
 
     init(gap: CGFloat) {
         self.gap = gap
@@ -33,6 +35,8 @@ final class RunnerLayer: CALayer {
         masksToBounds = true
         contentsScale = 2.0
         maskLayer.frame = bounds
+        fillLayer.isHidden = true
+        addSublayer(fillLayer)
         keyFrameAnimation.calculationMode = .discrete
         keyFrameAnimation.repeatCount = .infinity
         keyFrameAnimation.isRemovedOnCompletion = false
@@ -52,6 +56,7 @@ final class RunnerLayer: CALayer {
         maskLayer.removeAllAnimations()
         frame = CGRect(origin: CGPoint(x: gap, y: 2.0), size: size)
         maskLayer.frame = CGRect(origin: .zero, size: size)
+        updateRamFill()
         if isTemplate {
             if mask == nil {
                 maskLayer.speed = speed
@@ -90,6 +95,27 @@ final class RunnerLayer: CALayer {
             maskLayer.beginTime = CACurrentMediaTime()
             maskLayer.speed = speed
         }
+        CATransaction.commit()
+    }
+
+    func setRamFillState(_ level: Int, _ color: CGColor?) {
+        ramFillLevel = level
+        fillColor = color
+        updateRamFill()
+    }
+
+    private func updateRamFill() {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        let fillHeight = bounds.height * CGFloat(ramFillLevel) / 20.0
+        fillLayer.backgroundColor = fillColor
+        // Sublayers of the status bar button resolve y from the top, so the fill
+        // rect is anchored to the visually bottom edge by offsetting its origin.
+        fillLayer.frame = CGRect(
+            origin: CGPoint(x: .zero, y: bounds.height - fillHeight),
+            size: CGSize(width: bounds.width, height: fillHeight)
+        )
+        fillLayer.isHidden = fillColor == nil || ramFillLevel == .zero || mask == nil
         CATransaction.commit()
     }
 }

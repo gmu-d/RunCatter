@@ -96,6 +96,27 @@ struct RunnerService {
         appStateClient.send(\.runnerSpeeds, speed)
     }
 
+    func updateRamFillState(from memoryInfo: MemoryInfo?) {
+        let configuration = userDefaultsRepository.ramFillConfiguration
+        let usagePercentage = memoryInfo?.percentage.value
+        appStateClient.send(\.runnerRamFillStates, RamFillState(
+            level: Self.ramFillLevel(usagePercentage: usagePercentage),
+            zone: Self.ramFillZone(usagePercentage: usagePercentage, configuration: configuration)
+        ))
+    }
+
+    static func ramFillLevel(usagePercentage: Double?) -> Int {
+        guard let usagePercentage else { return .zero }
+        return min(20, max(0, Int(usagePercentage / 5.0)))
+    }
+
+    static func ramFillZone(usagePercentage: Double?, configuration: RamFillConfiguration) -> RamFillZone {
+        guard let usagePercentage else { return .normal }
+        if usagePercentage <= Double(configuration.lowThreshold) { return .low }
+        if usagePercentage < Double(configuration.highThreshold) { return .normal }
+        return .high
+    }
+
     func resendCurrentRunnerBundle() {
         if let runnerBundle = appStateClient.withLock(\.runnerBundles.latestValue) {
             appStateClient.send(\.runnerBundles, runnerBundle)

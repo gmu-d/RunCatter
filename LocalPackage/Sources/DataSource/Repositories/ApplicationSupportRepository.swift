@@ -36,7 +36,7 @@ public struct ApplicationSupportRepository: Sendable {
         let url = fileManagerClient
             .urls(.applicationSupportDirectory, .userDomainMask)
             .first?
-            .appending(path: "RunCatNeo", directoryHint: .isDirectory)
+            .appending(path: "RunCatter", directoryHint: .isDirectory)
             .absoluteURL
         guard let url else {
             fatalError("Failed to get application support directory.")

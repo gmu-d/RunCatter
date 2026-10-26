@@ -1,6 +1,6 @@
 # Architecture
 
-RunCat Neo follows the [LUCA architecture](https://github.com/Kyome22/LUCA). All source lives in the `LocalPackage/` Swift Package under three library targets with a strict, one-way dependency direction:
+RunCatter follows the [LUCA architecture](https://github.com/Kyome22/LUCA). All source lives in the `LocalPackage/` Swift Package under three library targets with a strict, one-way dependency direction:
 
 ```
 UserInterface  →  Model  →  DataSource
