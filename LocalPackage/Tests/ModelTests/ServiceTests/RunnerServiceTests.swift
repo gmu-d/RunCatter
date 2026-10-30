@@ -322,13 +322,27 @@ struct RunnerServiceTests {
 
     @Test
     func ramFillLevel_quantizes_memory_usage_in_five_percent_steps() {
-        #expect(RunnerService.ramFillLevel(usagePercentage: nil) == 0)
-        #expect(RunnerService.ramFillLevel(usagePercentage: 4.9) == 0)
-        #expect(RunnerService.ramFillLevel(usagePercentage: 5.0) == 1)
-        #expect(RunnerService.ramFillLevel(usagePercentage: 50.0) == 10)
-        #expect(RunnerService.ramFillLevel(usagePercentage: 99.9) == 19)
-        #expect(RunnerService.ramFillLevel(usagePercentage: 100.0) == 20)
-        #expect(RunnerService.ramFillLevel(usagePercentage: 120.0) == 20)
+        let configuration = RamFillConfiguration.default
+        #expect(RunnerService.ramFillLevel(usagePercentage: nil, configuration: configuration) == 0)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 4.9, configuration: configuration) == 0)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 5.0, configuration: configuration) == 1)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 50.0, configuration: configuration) == 10)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 99.9, configuration: configuration) == 19)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 100.0, configuration: configuration) == 20)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 120.0, configuration: configuration) == 20)
+    }
+
+    @Test
+    func ramFillLevel_maps_fifty_to_hundred_range_when_focused_on_overload() {
+        var configuration = RamFillConfiguration.default
+        configuration.showsOverloadOnly = true
+        #expect(RunnerService.ramFillLevel(usagePercentage: nil, configuration: configuration) == 0)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 49.9, configuration: configuration) == 0)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 50.0, configuration: configuration) == 0)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 75.0, configuration: configuration) == 10)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 99.9, configuration: configuration) == 19)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 100.0, configuration: configuration) == 20)
+        #expect(RunnerService.ramFillLevel(usagePercentage: 120.0, configuration: configuration) == 20)
     }
 
     @Test

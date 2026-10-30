@@ -100,14 +100,15 @@ struct RunnerService {
         let configuration = userDefaultsRepository.ramFillConfiguration
         let usagePercentage = memoryInfo?.percentage.value
         appStateClient.send(\.runnerRamFillStates, RamFillState(
-            level: Self.ramFillLevel(usagePercentage: usagePercentage),
+            level: Self.ramFillLevel(usagePercentage: usagePercentage, configuration: configuration),
             zone: Self.ramFillZone(usagePercentage: usagePercentage, configuration: configuration)
         ))
     }
 
-    static func ramFillLevel(usagePercentage: Double?) -> Int {
+    static func ramFillLevel(usagePercentage: Double?, configuration: RamFillConfiguration) -> Int {
         guard let usagePercentage else { return .zero }
-        return min(20, max(0, Int(usagePercentage / 5.0)))
+        let floorPercentage = configuration.showsOverloadOnly ? 50.0 : 0.0
+        return min(20, max(0, Int((usagePercentage - floorPercentage) / (100.0 - floorPercentage) * 20.0)))
     }
 
     static func ramFillZone(usagePercentage: Double?, configuration: RamFillConfiguration) -> RamFillZone {
