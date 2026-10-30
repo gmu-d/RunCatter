@@ -53,6 +53,16 @@ struct RunnerSettingsView: View {
                 )) {
                     Text("showRamFill", bundle: .module)
                 }
+                Toggle(isOn: Binding<Bool>(
+                    get: { store.ramFillConfiguration.showsOverloadOnly },
+                    asyncSet: { showsOverloadOnly in
+                        var configuration = store.ramFillConfiguration
+                        configuration.showsOverloadOnly = showsOverloadOnly
+                        await store.send(.ramFillConfigurationChanged(configuration))
+                    }
+                )) {
+                    Text("focusOnOverload", bundle: .module)
+                }
                 LabeledContent {
                     Slider(
                         value: Binding<Double>(

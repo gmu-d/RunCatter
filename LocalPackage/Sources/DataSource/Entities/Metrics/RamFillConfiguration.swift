@@ -20,6 +20,7 @@
 
 public struct RamFillConfiguration: Codable, Sendable, Equatable {
     public var isVisible: Bool
+    public var showsOverloadOnly: Bool
     public var lowThreshold: Int
     public var highThreshold: Int
     public var lowColorHex: String?
@@ -28,6 +29,7 @@ public struct RamFillConfiguration: Codable, Sendable, Equatable {
 
     public init(
         isVisible: Bool = true,
+        showsOverloadOnly: Bool = false,
         lowThreshold: Int,
         highThreshold: Int,
         lowColorHex: String?,
@@ -35,6 +37,7 @@ public struct RamFillConfiguration: Codable, Sendable, Equatable {
         highColorHex: String?
     ) {
         self.isVisible = isVisible
+        self.showsOverloadOnly = showsOverloadOnly
         self.lowThreshold = lowThreshold
         self.highThreshold = highThreshold
         self.lowColorHex = lowColorHex
@@ -43,13 +46,14 @@ public struct RamFillConfiguration: Codable, Sendable, Equatable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case isVisible, lowThreshold, highThreshold
+        case isVisible, showsOverloadOnly, lowThreshold, highThreshold
         case lowColorHex, normalColorHex, highColorHex
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         isVisible = try container.decodeIfPresent(Bool.self, forKey: .isVisible) ?? true
+        showsOverloadOnly = try container.decodeIfPresent(Bool.self, forKey: .showsOverloadOnly) ?? false
         lowThreshold = try container.decode(Int.self, forKey: .lowThreshold)
         highThreshold = try container.decode(Int.self, forKey: .highThreshold)
         lowColorHex = try container.decodeIfPresent(String.self, forKey: .lowColorHex)
