@@ -2,6 +2,7 @@
 
 **A cute running cat animation on your macOS menubar — with a RAM fill gauge.**
 
+[![Release](https://img.shields.io/github/v/release/gmu-d/RunCatter)](https://github.com/gmu-d/RunCatter/releases)
 [![Issues](https://img.shields.io/github/issues/gmu-d/RunCatter)](https://github.com/gmu-d/RunCatter/issues)
 [![Forks](https://img.shields.io/github/forks/gmu-d/RunCatter)](https://github.com/gmu-d/RunCatter/network/members)
 [![Stars](https://img.shields.io/github/stars/gmu-d/RunCatter)](https://github.com/gmu-d/RunCatter/stargazers)
@@ -9,6 +10,12 @@
 [![License](https://img.shields.io/github/license/gmu-d/RunCatter)](https://github.com/gmu-d/RunCatter/)
 
 `Swift` `macOS` `Xcode`
+
+## Download
+
+Latest release: **v0.2.0** — [RunCatter-apple-silicon-v0.2.0.zip](https://github.com/gmu-d/RunCatter/releases/download/v0.2.0/RunCatter-apple-silicon-v0.2.0.zip)
+
+Unzip, drag **RunCatter.app** to /Applications and launch — it lives in the menubar. The .app is not notarized; on other Macs, allow it in System Settings > Privacy & Security on first launch. See all [releases](https://github.com/gmu-d/RunCatter/releases).
 
 ## About This Fork
 
