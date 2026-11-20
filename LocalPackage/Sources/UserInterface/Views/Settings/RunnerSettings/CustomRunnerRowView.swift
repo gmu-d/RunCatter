@@ -23,16 +23,21 @@ import SwiftUI
 
 struct CustomRunnerRowView: View {
     var runnerBundle: RunnerBundle
-    var deleteButtonTapped: () async -> Void
+    var removeButtonTapped: () async -> Void
 
     var body: some View {
         LabeledContent {
             Button(role: .destructive) {
                 Task {
-                    await deleteButtonTapped()
+                    await removeButtonTapped()
                 }
             } label: {
-                Image(systemName: "minus.circle")
+                Label {
+                    Text("remove\(runnerBundle.runner.formatted)", bundle: .module)
+                } icon: {
+                    Image(systemName: "minus.circle")
+                }
+                .labelStyle(.iconOnly)
             }
             .buttonStyle(.borderless)
             .tint(Color.red)

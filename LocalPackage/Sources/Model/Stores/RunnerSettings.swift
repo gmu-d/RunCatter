@@ -31,6 +31,7 @@ public final class RunnerSettings: Composable {
     public var speedDecreasesUnderLoad: Bool
     public var isFlippedHorizontally: Bool
     public var ramFillConfiguration: RamFillConfiguration
+    public var usesAccentColor: Bool
     public let customRunnerSettings: CustomRunnerSettings
     public let action: (Action) async -> Void
 
@@ -39,6 +40,7 @@ public final class RunnerSettings: Composable {
         speedDecreasesUnderLoad: Bool? = nil,
         isFlippedHorizontally: Bool? = nil,
         ramFillConfiguration: RamFillConfiguration? = nil,
+        usesAccentColor: Bool? = nil,
         customRunnerSettings: CustomRunnerSettings? = nil,
         action: @escaping (Action) async -> Void = { _ in }
     ) {
@@ -49,6 +51,7 @@ public final class RunnerSettings: Composable {
         self.speedDecreasesUnderLoad = speedDecreasesUnderLoad ?? userDefaultsRepository.speedDecreasesUnderLoad
         self.isFlippedHorizontally = isFlippedHorizontally ?? userDefaultsRepository.isFlippedHorizontally
         self.ramFillConfiguration = ramFillConfiguration ?? userDefaultsRepository.ramFillConfiguration
+        self.usesAccentColor = usesAccentColor ?? userDefaultsRepository.usesAccentColor
         weak var weakSelf: RunnerSettings? = nil
         self.customRunnerSettings = customRunnerSettings ??
             .init(appDependencies, action: { await weakSelf?.send(.customRunnerSettings($0)) })
@@ -91,6 +94,11 @@ public final class RunnerSettings: Composable {
             userDefaultsRepository.ramFillConfiguration = configuration
             runnerService.updateRamFillState(from: systemMetricsService.currentSystemInfoBundle.memoryInfo)
 
+        case let .useAccentColorToggleSwitched(isOn):
+            usesAccentColor = isOn
+            userDefaultsRepository.usesAccentColor = isOn
+            runnerService.resendCurrentRunnerBundle()
+
         case .customRunnerSettings:
             return
         }
@@ -102,6 +110,7 @@ public final class RunnerSettings: Composable {
         case flipHorizontallyToggleSwitched(Bool)
         case ramFillConfigurationChanged(RamFillConfiguration)
         case ramFillColorsReset
+        case useAccentColorToggleSwitched(Bool)
         case customRunnerSettings(CustomRunnerSettings.Action)
     }
 }
